@@ -3,8 +3,15 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    [SerializeField] private Vector2Int m_worldSize;
-    [SerializeField] private int m_pixelPerUnit;
+    [SerializeField] public Vector2Int m_worldSize;
+    [SerializeField] public int m_pixelPerUnit;
+
+    public static WorldManager instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -26,5 +33,7 @@ public class WorldManager : MonoBehaviour
             new Rect(0, 0, m_worldSize.x, m_worldSize.y),
             Vector2.one * 0.5f,
             m_pixelPerUnit);
+
+        worldObj.AddComponent<World>();
     }
 }

@@ -42,10 +42,13 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets/Scripts/World.cs" />
-     <Compile Include="Assets/WorldManager.cs" />
+     <Compile Include="Assets/Scripts/WorldManager.cs" />
+     <Compile Include="Assets/Scripts/Particle/Particle.cs" />
+     <Compile Include="Assets/Scripts/Particle/ParticleMove.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets/Scenes" />
      <Folder Include="Assets/Scripts" />
+     <Folder Include="Assets/Scripts/Particle" />
      <Reference Include="UnityEngine">
      <HintPath>/Applications/Unity/Hub/Editor/2021.3.16f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
