@@ -41,10 +41,13 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets/Scripts/Particle/ParticleData.cs" />
+     <Compile Include="Assets/Scripts/Particle/ParticleMoveChecks.cs" />
+     <Compile Include="Assets/ParticleManager.cs" />
      <Compile Include="Assets/Scripts/World.cs" />
      <Compile Include="Assets/Scripts/WorldManager.cs" />
      <Compile Include="Assets/Scripts/Particle/Particle.cs" />
-     <Compile Include="Assets/Scripts/Particle/ParticleMove.cs" />
+     <Compile Include="Assets/Scripts/ParticleSlot.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets/Scenes" />
      <Folder Include="Assets/Scripts" />

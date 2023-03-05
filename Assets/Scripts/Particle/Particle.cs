@@ -1,36 +1,44 @@
 using UnityEngine;
 
-public abstract class Particle : ScriptableObject
+public abstract class Particle
 {
-    public ParticleType particleType;
-    public Color32 colour;
+    protected ParticleData data;
+
+    protected Particle(ParticleData data)
+    {
+        this.data = data;
+    }
+
+    protected void PerformMove()
+    {
+        
+    }
 }
 
 public abstract class Solid : Particle
 {
-    
+    protected Solid(ParticleData data) : base(data)
+    {
+    }
 }
 
-public interface IMovableSolid
+public abstract class MoveAbleSolid : Solid
 {
-    
+    protected MoveAbleSolid(ParticleData data) : base(data)
+    {
+    }
 }
 
-public interface IImmovableSolid
+public class Sand : Solid 
 {
-    
+    public Sand(ParticleData data) : base(data)
+    {
+    }
 }
 
-[CreateAssetMenu(fileName = "Sand", menuName="World Generation/Particle/Sand")]
-public class Sand : Solid, IMovableSolid
+public class Empty : Particle
 {
-    
+    public Empty(ParticleData data) : base(data)
+    {
+    }
 }
-
-public enum ParticleType
-{
-    Air,
-    Water,
-    Sand
-}
-

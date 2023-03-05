@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    [SerializeField] public Vector2Int m_worldSize;
-    [SerializeField] public int m_pixelPerUnit;
-
+    public int m_pixelPerUnit;
+    public Vector2Int m_worldSize;
+    
     public static WorldManager instance;
 
     private void Awake()
@@ -34,6 +35,7 @@ public class WorldManager : MonoBehaviour
             Vector2.one * 0.5f,
             m_pixelPerUnit);
 
-        worldObj.AddComponent<World>();
+        World world = worldObj.AddComponent<World>();
+        world.Init(m_worldSize);
     }
 }
