@@ -14,4 +14,5 @@ public class ParticleMoveChecks
         Left,
         UpLeft,
     }
+    
 }

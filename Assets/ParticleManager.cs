@@ -10,7 +10,7 @@ public class ParticleManager : MonoBehaviour
 
     private static ParticleManager instance;
 
-    private void Awake()
+    public void Start()
     {
         Init();
     }
@@ -18,7 +18,8 @@ public class ParticleManager : MonoBehaviour
     private void Init()
     {
         instance = this;
-        
+
+        _particleDataDict = new Dictionary<ParticleType, ParticleData>();
         foreach (ParticleData data in instance._particleDatas)
         {
             if (instance._particleDataDict.ContainsKey(data.particleType))

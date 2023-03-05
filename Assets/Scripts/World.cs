@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -27,14 +28,18 @@ public class World : MonoBehaviour
 
     private void HandleOnMouseDown()
     {
-        if (Camera.main == null)
-        {
-           return;
-        }
+        if (Camera.main == null) { return; }
         
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int pixelPos = GetPixelPos(mouseWorldPosition);
-        AddParticle(type: ParticleType.Sand, particlePos: pixelPos,slot:);
+        ParticleSlot slot = GetParticleSlot(pixelPos.x, pixelPos.y);
+        if (slot.ContainsParticle())
+        {
+            Debug.Log("Can't paint on slot. Contain particle");
+            return;
+        }
+        
+        AddParticle(type: ParticleType.Sand, particlePos: pixelPos, slot: slot);
         DrawPixel(pixelPos);
     }
 
@@ -59,6 +64,11 @@ public class World : MonoBehaviour
         return new Vector2Int(xPixelPos, yPixelPos);
     }
 
+    private ParticleSlot GetParticleSlot(int x, int y)
+    {
+        return _particleSlots[x, y];
+    }
+
     private void AddParticle(ParticleType type, Vector2Int particlePos, ParticleSlot slot)
     {
         if (slot.ContainsParticle())
@@ -79,5 +89,13 @@ public class World : MonoBehaviour
     private IEnumerator UpdateLogic()
     {
         yield return new WaitForSeconds(0.1f);
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(1))
+        {
+            HandleOnMouseDown();
+        }
     }
 }

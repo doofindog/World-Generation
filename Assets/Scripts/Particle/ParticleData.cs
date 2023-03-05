@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[System.Serializable]
 public class ParticleData : ScriptableObject
 {
     public ParticleType particleType;
@@ -13,12 +14,6 @@ public class SolidData : ParticleData
 }
 
 public class EmptyData : ParticleData
-{
-    
-}
-
-[CreateAssetMenu(fileName = "Sand", menuName="World Generation/Particle/Sand")]
-public class SandData : SolidData
 {
     
 }
