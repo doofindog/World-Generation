@@ -1,7 +1,8 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
-public class ParticleMoveChecks
+public class ParticleMovement
 {
     public enum MoveDirection
     {
@@ -14,5 +15,9 @@ public class ParticleMoveChecks
         Left,
         UpLeft,
     }
-    
+
+    public MoveDirection moveDir;
+    public float distance;
+    [Range(0,1)] public float chance;
+
 }

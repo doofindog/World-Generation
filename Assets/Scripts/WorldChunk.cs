@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class World : MonoBehaviour
+public class WorldChunk : MonoBehaviour
 {
     private Sprite m_sprite;
     private Texture2D m_worldTexture;
@@ -88,7 +88,20 @@ public class World : MonoBehaviour
 
     private IEnumerator UpdateLogic()
     {
-        yield return new WaitForSeconds(0.1f);
+        while (true)
+        {
+            for (int y = 0; y < _particleSlots.LongLength; y++)
+            {
+                for (int x = 0; x < _particleSlots.Length; x++)
+                {
+                    _particleSlots[x,y].UpdateParticleLogic();
+                }
+            }
+            
+            yield return new WaitForSeconds(0.0125f);
+        }
+        
+        // ReSharper disable once IteratorNeverReturns
     }
 
     private void Update()

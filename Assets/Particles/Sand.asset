@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b2ab1e0e134514da490a153646dd94, type: 3}
   m_Name: Sand
   m_EditorClassIdentifier: 
-  particleType: 0
+  particleType: 2
   colour:
     serializedVersion: 2
     rgba: 0
-  moveChecks: []
+  moveChecks:
+  - moveDir: 4
+    distance: 1
+    chance: 1

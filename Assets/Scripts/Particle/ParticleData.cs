@@ -5,7 +5,7 @@ public class ParticleData : ScriptableObject
 {
     public ParticleType particleType;
     public Color32 colour;
-    public ParticleMoveChecks[] moveChecks;
+    [SerializeField] public ParticleMovement[] moveChecks;
 }
 
 public class SolidData : ParticleData

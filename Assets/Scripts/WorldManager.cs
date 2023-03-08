@@ -35,7 +35,7 @@ public class WorldManager : MonoBehaviour
             Vector2.one * 0.5f,
             m_pixelPerUnit);
 
-        World world = worldObj.AddComponent<World>();
-        world.Init(m_worldSize);
+        WorldChunk worldChunk = worldObj.AddComponent<WorldChunk>();
+        worldChunk.Init(m_worldSize);
     }
 }

@@ -11,8 +11,18 @@ public class ParticleSlot
         _particle = particle;
     }
 
+    public void RemoveParticle()
+    {
+        _particle = null;
+    }
+
     public bool ContainsParticle()
     {
         return _particle != null;
+    }
+
+    public void UpdateParticleLogic()
+    {
+        
     }
 }

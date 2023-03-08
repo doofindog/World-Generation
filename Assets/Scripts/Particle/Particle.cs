@@ -9,9 +9,14 @@ public abstract class Particle
         this.data = data;
     }
 
-    protected void PerformMove()
+    protected ParticleMovement[] GetMovements()
     {
-        
+        return null;
+    }
+
+    protected void GetDensity()
+    {
+        return;
     }
 }
 
