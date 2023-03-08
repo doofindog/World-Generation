@@ -36,6 +36,8 @@ public class WorldManager : MonoBehaviour
             m_pixelPerUnit);
 
         WorldChunk worldChunk = worldObj.AddComponent<WorldChunk>();
+        ParticleLogic particleLogic = worldObj.AddComponent<ParticleLogic>();
         worldChunk.Init(m_worldSize);
+        particleLogic.Init(worldChunk);
     }
 }

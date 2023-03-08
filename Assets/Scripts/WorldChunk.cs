@@ -6,23 +6,28 @@ public class WorldChunk : MonoBehaviour
 {
     private Sprite m_sprite;
     private Texture2D m_worldTexture;
-    private ParticleSlot[,] _particleSlots;
+    private Particle[,] m_particles;
+    private ParticleLogic m_logic;
+
+    private ParticleType m_currentType;
     
     public void Init(Vector2Int worldSize)
     {
-        _particleSlots = new ParticleSlot[worldSize.x, worldSize.y];
-        
+        m_particles = new Particle[worldSize.x, worldSize.y];
         for(int y = 0; y < worldSize.y; y++)
         {
             for (int x = 0; x < worldSize.x; x++)
             {
-                _particleSlots[x, y] = new ParticleSlot();
+                m_particles[x, y] = new Particle();
+                m_particles[x,y].Init(new Vector2Int(x, y));
             }
         }
         
         m_sprite = GetComponent<SpriteRenderer>().sprite;
+        m_logic = GetComponent<ParticleLogic>();
         m_worldTexture = m_sprite.texture;
-
+        m_currentType = ParticleType.Sand;
+        
         StartCoroutine(UpdateLogic());
     }
 
@@ -32,15 +37,20 @@ public class WorldChunk : MonoBehaviour
         
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2Int pixelPos = GetPixelPos(mouseWorldPosition);
-        ParticleSlot slot = GetParticleSlot(pixelPos.x, pixelPos.y);
-        if (slot.ContainsParticle())
+        if (!CheckPositionBounds(pixelPos.x, pixelPos.y))
+        {
+            return;
+        }
+        
+        Particle slot = GetParticle(pixelPos.x, pixelPos.y);
+        if (slot.ContainsData())
         {
             Debug.Log("Can't paint on slot. Contain particle");
             return;
         }
         
-        AddParticle(type: ParticleType.Sand, particlePos: pixelPos, slot: slot);
-        DrawPixel(pixelPos);
+        Particle particle = AddParticle(type: m_currentType, particlePos: pixelPos, particle: slot);
+        DrawPixel(pixelPos, particle.GetParticleData().colour);
     }
 
     private Vector2Int GetPixelPos(Vector2 pos)
@@ -64,25 +74,38 @@ public class WorldChunk : MonoBehaviour
         return new Vector2Int(xPixelPos, yPixelPos);
     }
 
-    private ParticleSlot GetParticleSlot(int x, int y)
+    public Particle GetParticle(int x, int y)
     {
-        return _particleSlots[x, y];
+        return !CheckPositionBounds(x,y) ? null : m_particles[x, y];
     }
 
-    private void AddParticle(ParticleType type, Vector2Int particlePos, ParticleSlot slot)
+    public bool ContainsParticle(int x, int y)
     {
-        if (slot.ContainsParticle())
+        Particle particle = GetParticle(x, y);
+        if (particle == null)
         {
-            return;
+            return false;
         }
 
-        Particle particle = ParticleManager.CreateParticle(ParticleType.Sand);
-        slot.AddParticle(particle);
+        return particle.ContainsData();
     }
 
-    private void DrawPixel(Vector2Int pixelPosition)
+    private Particle AddParticle(ParticleType type, Vector2Int particlePos, Particle particle)
     {
-        m_worldTexture.SetPixel(pixelPosition.x, pixelPosition.y, Color.black);
+        if (particle.ContainsData())
+        {
+            return null;
+        }
+
+        ParticleData particleData = ParticleManager.GetParticleData(type);
+        particle.AddParticleData(particleData);
+
+        return particle;
+    }
+
+    public void DrawPixel(Vector2Int pixelPosition, Color color)
+    {
+        m_worldTexture.SetPixel(pixelPosition.x, pixelPosition.y, color);
         m_worldTexture.Apply();
     }
 
@@ -90,13 +113,19 @@ public class WorldChunk : MonoBehaviour
     {
         while (true)
         {
-            for (int y = 0; y < _particleSlots.LongLength; y++)
+            for (int y = 0; y < m_particles.GetLength(1); y++)
             {
-                for (int x = 0; x < _particleSlots.Length; x++)
+                for (int x = 0; x < m_particles.GetLength(0); x++)
                 {
-                    _particleSlots[x,y].UpdateParticleLogic();
+                    if (!m_particles[x, y].ContainsData())
+                    {
+                        continue;
+                    }
+                    
+                    m_logic.UpdateParticle(m_particles[x, y]);
                 }
             }
+            
             
             yield return new WaitForSeconds(0.0125f);
         }
@@ -106,9 +135,38 @@ public class WorldChunk : MonoBehaviour
 
     private void Update()
     {
+        KeyCode[] inputKeys = new KeyCode[]
+        {
+            KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5,
+            KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
+        };
+
+        for (int i = 0; i < inputKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(inputKeys[i]))
+            {
+                ParticleData data = ParticleManager.GetParticleAtIndex(i);
+                m_currentType = data.particleType;
+                Debug.Log(m_currentType);
+            }
+        }
+
         if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(1))
         {
             HandleOnMouseDown();
         }
     }
+
+    public bool CheckPositionBounds(int x, int y)
+    {
+        if (x < 0 || x >= m_particles.GetLength(0) ||
+            y < 0 || y >= m_particles.GetLength(1))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
+    
 }

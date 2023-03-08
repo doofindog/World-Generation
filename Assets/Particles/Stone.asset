@@ -10,16 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7dd64115d0712477cbdb815d150212f4, type: 3}
-  m_Name: Sand
+  m_Name: Stone
   m_EditorClassIdentifier: 
-  particleType: 2
+  particleType: 3
   colour:
     serializedVersion: 2
-    rgba: 4282510579
-  movements:
-  - moveDir: 4
-    distance: 1
-    chance: 1
-  - moveDir: 8
-    distance: 1
-    chance: 1
+    rgba: 4283124555
+  movements: []

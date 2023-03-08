@@ -1,27 +1,21 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
+
+[CreateAssetMenu(fileName = "particle", menuName = "World Generation/Create Particle")]
 [System.Serializable]
 public class ParticleData : ScriptableObject
 {
     public ParticleType particleType;
     public Color32 colour;
-    [SerializeField] public ParticleMovement[] moveChecks;
-}
-
-public class SolidData : ParticleData
-{
-    
-}
-
-public class EmptyData : ParticleData
-{
-    
+    [FormerlySerializedAs("moveChecks")] [SerializeField] public ParticleMovement[] movements;
 }
 
 public enum ParticleType
 {
     Empty,
     Water,
-    Sand
+    Sand,
+    Stone
 }
 

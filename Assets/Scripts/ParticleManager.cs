@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ParticleManager : MonoBehaviour
 {
-    [SerializeField] private ParticleData[] _particleDatas;
+    [FormerlySerializedAs("_particleDatas")] [SerializeField] private ParticleData[] m_particleDatas;
     private Dictionary<ParticleType, ParticleData> _particleDataDict;
 
     private static ParticleManager instance;
@@ -20,7 +21,7 @@ public class ParticleManager : MonoBehaviour
         instance = this;
 
         _particleDataDict = new Dictionary<ParticleType, ParticleData>();
-        foreach (ParticleData data in instance._particleDatas)
+        foreach (ParticleData data in instance.m_particleDatas)
         {
             if (instance._particleDataDict.ContainsKey(data.particleType))
             {
@@ -31,21 +32,7 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public static Particle CreateParticle(ParticleType type)
-    {
-        ParticleData data = GetParticleData(type);
-        switch (type)
-        {
-            case ParticleType.Empty:
-                return new Empty(data);
-            case ParticleType.Sand:
-                return new Sand(data);
-            default:
-                return null;
-        }
-    }
-
-    private static ParticleData GetParticleData(ParticleType type)
+    public static ParticleData GetParticleData(ParticleType type)
     {
         if (instance._particleDataDict.ContainsKey(type))
         {
@@ -53,5 +40,10 @@ public class ParticleManager : MonoBehaviour
         }
         
         return null;
+    }
+
+    public static ParticleData GetParticleAtIndex(int index)
+    {
+        return instance.m_particleDatas[index];
     }
 }
