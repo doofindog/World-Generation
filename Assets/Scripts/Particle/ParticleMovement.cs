@@ -15,10 +15,11 @@ public class ParticleMovement
         Left,
         UpLeft,
         RandomDownDiagonal,
-        RandomUpDiagonal
+        RandomUpDiagonal,
+        RandomHorizontal,
     }
 
     public MoveDirection moveDir;
-    public float distance;
+    public int distance;
     [Range(0,1)] public float chance;
 }

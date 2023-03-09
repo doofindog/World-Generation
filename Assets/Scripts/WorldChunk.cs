@@ -5,6 +5,7 @@ using UnityEngine;
 public class WorldChunk : MonoBehaviour
 {
     private Sprite m_sprite;
+    private Color m_defaultColor;
     private Texture2D m_worldTexture;
     private Particle[,] m_particles;
     private ParticleLogic m_logic;
@@ -13,6 +14,11 @@ public class WorldChunk : MonoBehaviour
     
     public void Init(Vector2Int worldSize)
     {
+        m_sprite = GetComponent<SpriteRenderer>().sprite;
+        m_logic = GetComponent<ParticleLogic>();
+        m_worldTexture = m_sprite.texture;
+        m_currentType = ParticleType.Sand;
+
         m_particles = new Particle[worldSize.x, worldSize.y];
         for(int y = 0; y < worldSize.y; y++)
         {
@@ -20,14 +26,10 @@ public class WorldChunk : MonoBehaviour
             {
                 m_particles[x, y] = new Particle();
                 m_particles[x,y].Init(new Vector2Int(x, y));
+                DrawPixel(new Vector2Int(x,y), Color.gray);
             }
         }
-        
-        m_sprite = GetComponent<SpriteRenderer>().sprite;
-        m_logic = GetComponent<ParticleLogic>();
-        m_worldTexture = m_sprite.texture;
-        m_currentType = ParticleType.Sand;
-        
+
         StartCoroutine(UpdateLogic());
     }
 
@@ -82,12 +84,7 @@ public class WorldChunk : MonoBehaviour
     public bool ContainsParticle(int x, int y)
     {
         Particle particle = GetParticle(x, y);
-        if (particle == null)
-        {
-            return false;
-        }
-
-        return particle.ContainsData();
+        return particle != null && particle.ContainsData();
     }
 
     private Particle AddParticle(ParticleType type, Vector2Int particlePos, Particle particle)

@@ -333,3 +333,4 @@ MonoBehaviour:
   m_particleDatas:
   - {fileID: 11400000, guid: 8e587e10d973cca409c19c38182fe955, type: 2}
   - {fileID: 11400000, guid: 0095b7d916792604f90280d97a3945da, type: 2}
+  - {fileID: 11400000, guid: 1238f547dd1ef354a9bd09f9fd6509d5, type: 2}

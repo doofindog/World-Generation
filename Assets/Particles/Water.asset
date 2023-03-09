@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd64115d0712477cbdb815d150212f4, type: 3}
+  m_Name: Water
+  m_EditorClassIdentifier: 
+  particleType: 1
+  colour:
+    serializedVersion: 2
+    rgba: 4294163021
+  mass: 1
+  minMass: 1
+  maxMass: 3
+  transferMass: 0
+  movements:
+  - moveDir: 4
+    distance: 0
+    chance: 1
+  - moveDir: 8
+    distance: 0
+    chance: 1
+  - moveDir: 10
+    distance: 5
+    chance: 1

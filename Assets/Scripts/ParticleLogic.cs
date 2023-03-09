@@ -45,6 +45,12 @@ public class ParticleLogic : MonoBehaviour
                     movedCheck = TryMove(particle, new Vector2Int(horizontalDirection, -1), movement.distance);
                     break;
                 }
+                case ParticleMovement.MoveDirection.RandomHorizontal:
+                {
+                    int horizontalDirection = Random.Range(-1, 2);
+                    movedCheck = TryMove(particle, new Vector2Int(horizontalDirection * movement.distance, 0), movement.distance);
+                    break;
+                }
             }
 
             if (movedCheck)
@@ -56,23 +62,29 @@ public class ParticleLogic : MonoBehaviour
 
     private bool TryMove(Particle particle, Vector2Int dir, float distance)
     {
-        if (CanMoveInDirection(particle, dir) == false)
+        if (CheckMoveInDirection(particle, dir))
         {
-            return false;
+            MoveParticleInDirection(particle, dir, distance);
+            return true;
         }
-
-        MoveParticleInDirection(particle, dir, distance);
-        return true;
+        
+        return false;
     }
     
 
-    private bool CanMoveInDirection(Particle particle, Vector2Int dir)
+    private bool CheckMoveInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + dir;
         if (!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y)) return false;
         if (m_worldChunk.ContainsParticle(neighbourPos.x, neighbourPos.y)) return false;
 
         return true;
+    }
+
+    private bool CanMergeInDirection(Particle particle, Vector2Int dir)
+    {
+        Vector2Int neighbourPos = particle.GetPosition() + dir;
+        return false;
     }
 
     private void MoveParticleInDirection(Particle particle, Vector2Int dir, float distance)

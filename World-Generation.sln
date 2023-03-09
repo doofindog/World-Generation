@@ -1,15 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingularityGroup.HotReload.Runtime", "SingularityGroup.HotReload.Runtime.csproj", "{4bbb2c41-ecf6-f87e-c1b0-8406da70d8f5}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{f6a975d4-9862-28d3-6f9f-dda2f9b15f4d}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingularityGroup.HotReload.Runtime.Public", "SingularityGroup.HotReload.Runtime.Public.csproj", "{8a4de4d8-fda9-bc62-d13f-cab096632d50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingularityGroup.HotReload.Editor", "SingularityGroup.HotReload.Editor.csproj", "{163e10ab-1218-7909-c96c-2aa937c94a86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4bbb2c41-ecf6-f87e-c1b0-8406da70d8f5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4bbb2c41-ecf6-f87e-c1b0-8406da70d8f5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{f6a975d4-9862-28d3-6f9f-dda2f9b15f4d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{f6a975d4-9862-28d3-6f9f-dda2f9b15f4d}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8a4de4d8-fda9-bc62-d13f-cab096632d50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8a4de4d8-fda9-bc62-d13f-cab096632d50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{163e10ab-1218-7909-c96c-2aa937c94a86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{163e10ab-1218-7909-c96c-2aa937c94a86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

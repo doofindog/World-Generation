@@ -8,6 +8,10 @@ public class ParticleData : ScriptableObject
 {
     public ParticleType particleType;
     public Color32 colour;
+    public int mass;
+    public int minMass;
+    public int maxMass;
+    public int transferMass;
     [FormerlySerializedAs("moveChecks")] [SerializeField] public ParticleMovement[] movements;
 }
 

@@ -41,4 +41,9 @@ public class Particle
     {
         return m_particleData;
     }
+
+    public int GetMass()
+    {
+        return m_particleData.mass;
+    }
 }
