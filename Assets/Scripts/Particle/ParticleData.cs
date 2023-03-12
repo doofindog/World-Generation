@@ -7,12 +7,14 @@ using UnityEngine.Serialization;
 public class ParticleData : ScriptableObject
 {
     public ParticleType particleType;
-    public Color32 colour;
-    public int mass;
-    public int minMass;
-    public int maxMass;
-    public int transferMass;
+    public Gradient colour;
+    
+    [Header("Movement")]
     [FormerlySerializedAs("moveChecks")] [SerializeField] public ParticleMovement[] movements;
+
+    [Header("Passthrough")]
+    public float resistance;
+    public int dispersalRate;
 }
 
 public enum ParticleType
@@ -20,6 +22,7 @@ public enum ParticleType
     Empty,
     Water,
     Sand,
-    Stone
+    Wood,
+    Gas
 }
 

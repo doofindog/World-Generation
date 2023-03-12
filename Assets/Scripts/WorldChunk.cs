@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WorldChunk : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class WorldChunk : MonoBehaviour
     private Color m_defaultColor;
     private Texture2D m_worldTexture;
     private Particle[,] m_particles;
+    private Color[] m_chuckColour;
     private ParticleLogic m_logic;
 
     private ParticleType m_currentType;
@@ -30,6 +33,7 @@ public class WorldChunk : MonoBehaviour
             }
         }
 
+        m_chuckColour = new Color[m_particles.Length];
         StartCoroutine(UpdateLogic());
     }
 
@@ -44,15 +48,14 @@ public class WorldChunk : MonoBehaviour
             return;
         }
         
-        Particle slot = GetParticle(pixelPos.x, pixelPos.y);
-        if (slot.ContainsData())
+        Particle slot = GetParticleAtIndex(pixelPos.x, pixelPos.y);
+        if (slot.GetParticleType() != ParticleType.Empty)
         {
-            Debug.Log("Can't paint on slot. Contain particle");
             return;
         }
         
         Particle particle = AddParticle(type: m_currentType, particlePos: pixelPos, particle: slot);
-        DrawPixel(pixelPos, particle.GetParticleData().colour);
+        DrawPixel(pixelPos, particle.GetParticleData().colour.Evaluate(Random.Range(0f,1f)));
     }
 
     private Vector2Int GetPixelPos(Vector2 pos)
@@ -76,27 +79,26 @@ public class WorldChunk : MonoBehaviour
         return new Vector2Int(xPixelPos, yPixelPos);
     }
 
-    public Particle GetParticle(int x, int y)
+    public Particle GetParticleAtIndex(int x, int y)
     {
         return !CheckPositionBounds(x,y) ? null : m_particles[x, y];
     }
 
     public bool ContainsParticle(int x, int y)
     {
-        Particle particle = GetParticle(x, y);
-        return particle != null && particle.ContainsData();
+        Particle particle = GetParticleAtIndex(x, y);
+        return particle != null && particle.GetParticleType() != ParticleType.Empty;
     }
 
     private Particle AddParticle(ParticleType type, Vector2Int particlePos, Particle particle)
     {
-        if (particle.ContainsData())
+        if (ContainsParticle(particlePos.x, particlePos.y))
         {
             return null;
         }
-
-        ParticleData particleData = ParticleManager.GetParticleData(type);
-        particle.AddParticleData(particleData);
-
+        
+        particle.AddParticle(type);
+        
         return particle;
     }
 
@@ -110,23 +112,41 @@ public class WorldChunk : MonoBehaviour
     {
         while (true)
         {
-            for (int y = 0; y < m_particles.GetLength(1); y++)
+            for (int i = 0; i < m_particles.Length; i++)
             {
-                for (int x = 0; x < m_particles.GetLength(0); x++)
+                int x = i % WorldManager.instance.m_worldSize.x;
+                int y = i / WorldManager.instance.m_worldSize.x;
+                if (m_particles[x, y].GetParticleType() == ParticleType.Empty)
                 {
-                    if (!m_particles[x, y].ContainsData())
-                    {
-                        continue;
-                    }
-                    
-                    m_logic.UpdateParticle(m_particles[x, y]);
+                    continue;
                 }
+                    
+                m_logic.UpdateParticle(m_particles[x, y]);
             }
             
-            
+            for (int i = 0; i < m_particles.Length; i++)
+            {
+                int x = i % WorldManager.instance.m_worldSize.x;
+                int y = i / WorldManager.instance.m_worldSize.y;
+
+                if (m_particles[x, y].GetParticleType() != ParticleType.Empty)
+                {
+                    m_chuckColour[i] = m_particles[x, y].GetParticleData().colour.Evaluate(Random.Range(0f, 1.0f));
+                }
+                else
+                {
+                    m_chuckColour[i]= Color.gray;
+                }
+
+                if (m_particles[x, y].HasUpdated())
+                {
+                    m_particles[x,y].SetUpdated(false);
+                }
+            }
+            m_worldTexture.SetPixels(m_chuckColour);
+            m_worldTexture.Apply();
             yield return new WaitForSeconds(0.0125f);
         }
-        
         // ReSharper disable once IteratorNeverReturns
     }
 
@@ -164,6 +184,4 @@ public class WorldChunk : MonoBehaviour
 
         return true;
     }
-    
-    
 }

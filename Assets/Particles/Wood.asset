@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7dd64115d0712477cbdb815d150212f4, type: 3}
-  m_Name: Sand
+  m_Name: Wood
   m_EditorClassIdentifier: 
-  particleType: 2
+  particleType: 3
   colour:
     serializedVersion: 2
-    key0: {r: 0.61960787, g: 0.57254905, b: 0.4431373, a: 1}
-    key1: {r: 0.8018868, g: 0.7343064, b: 0.5484603, a: 1}
-    key2: {r: 0.9716981, g: 0.8833827, b: 0.6921057, a: 0}
+    key0: {r: 0.3584906, g: 0.26744393, b: 0.2012282, a: 1}
+    key1: {r: 0.735849, g: 0.55147624, b: 0.40610537, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 964
-    ctime2: 65535
+    ctime1: 65535
+    ctime2: 0
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -40,14 +40,8 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 3
+    m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  movements:
-  - moveDir: 4
-    distance: 1
-    chance: 1
-  - moveDir: 8
-    distance: 1
-    chance: 1
-  resistance: 1
-  dispersalRate: 13
+  movements: []
+  resistance: 2
+  dispersalRate: 0

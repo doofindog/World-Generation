@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,45 +6,58 @@ using UnityEngine;
 public class Particle
 {
     private Vector2Int m_position;
-    private ParticleData m_particleData;
+    private ParticleType m_type;
+    private bool m_updated;
 
     public void Init(Vector2Int position)
     {
         m_position = position;
+        m_type = ParticleType.Empty;
     }
 
-    public void AddParticleData(ParticleData particle)
+    public void AddParticle(ParticleType type)
     {
-        m_particleData = particle;
+        m_type = type;
     }
 
     public void RemoveParticleData()
     {
-        m_particleData = null;
-    }
-
-    public bool ContainsData()
-    {
-        return m_particleData != null;
+        m_type = ParticleType.Empty;
     }
 
     public ParticleMovement[] GetMovements()
     {
-        return m_particleData.movements;
+        return GetParticleData().movements;
     }
 
     public Vector2Int GetPosition()
     {
         return m_position;
     }
+    
+
+    public ParticleType GetParticleType()
+    {
+        return m_type;
+    }
 
     public ParticleData GetParticleData()
     {
-        return m_particleData;
+        if (m_type == ParticleType.Empty)
+        {
+            return null;
+        }
+        
+        return ParticleManager.GetParticleData(m_type);
     }
 
-    public int GetMass()
+    public bool HasUpdated()
     {
-        return m_particleData.mass;
+        return m_updated;
+    }
+
+    public void SetUpdated(bool value)
+    {
+        m_updated = value;
     }
 }
