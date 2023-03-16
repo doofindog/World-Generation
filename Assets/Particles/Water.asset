@@ -50,7 +50,7 @@ MonoBehaviour:
     distance: 1
     chance: 1
   - moveDir: 10
-    distance: 5
+    distance: 4
     chance: 1
   resistance: 0
   dispersalRate: 0

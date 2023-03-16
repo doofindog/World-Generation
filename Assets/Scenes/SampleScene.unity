@@ -185,8 +185,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfcec7f7cd6d04449b8015c9aff3d033, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_pixelPerUnit: 16
-  m_worldSize: {x: 64, y: 64}
+  pixelPerUnit: 16
+  worldSize: {x: 64, y: 64}
+  chunkSize: {x: 32, y: 32}
 --- !u!4 &363839208
 Transform:
   m_ObjectHideFlags: 0

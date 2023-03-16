@@ -6,7 +6,7 @@ using UnityEngine;
 public class ParticleLogic : MonoBehaviour
 {
     private WorldChunk m_worldChunk;
-    
+
     public void Init(WorldChunk chunk)
     {
         m_worldChunk = chunk;
@@ -125,8 +125,14 @@ public class ParticleLogic : MonoBehaviour
 
     private bool CheckMoveInDirection(Particle particle, Vector2Int dir)
     {
-        Vector2Int neighbourPos = particle.GetPosition() + (dir) ;
-        if(!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y))  return false;
+        Vector2Int neighbourPos = particle.GetPosition() + (dir);
+        //WorldChunk chunk = WorldManager.instance.GetChunk(neighbourPos.x / 32, neighbourPos.y / 32);
+        if (!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y))
+        {
+            //Check if In neighbours chunk
+            return false;
+        }
+
         if (m_worldChunk.ContainsParticle(neighbourPos.x, neighbourPos.y)) return false;
 
         return true;

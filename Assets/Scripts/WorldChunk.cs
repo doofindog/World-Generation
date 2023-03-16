@@ -6,29 +6,32 @@ using Random = UnityEngine.Random;
 
 public class WorldChunk : MonoBehaviour
 {
+    private Vector2Int m_chunkPosition;
     private Sprite m_sprite;
     private Color m_defaultColor;
     private Texture2D m_worldTexture;
     private Particle[,] m_particles;
     private Color[] m_chuckColour;
     private ParticleLogic m_logic;
-
+    private WorldChunk[] m_neighbourChunks;
     private ParticleType m_currentType;
     
-    public void Init(Vector2Int worldSize)
+    public void Init(Vector2Int position,Vector2Int worldSize)
     {
         m_sprite = GetComponent<SpriteRenderer>().sprite;
         m_logic = GetComponent<ParticleLogic>();
+        
+        m_chunkPosition = position;
         m_worldTexture = m_sprite.texture;
-        m_currentType = ParticleType.Sand;
-
         m_particles = new Particle[worldSize.x, worldSize.y];
+        m_currentType = ParticleType.Sand;
+        
         for(int y = 0; y < worldSize.y; y++)
         {
             for (int x = 0; x < worldSize.x; x++)
             {
                 m_particles[x, y] = new Particle();
-                m_particles[x,y].Init(new Vector2Int(x, y));
+                m_particles[x,y].Init(new Vector2Int(x * m_chunkPosition.x, y * m_chunkPosition.y));
                 DrawPixel(new Vector2Int(x,y), Color.gray);
             }
         }
@@ -70,8 +73,8 @@ public class WorldChunk : MonoBehaviour
         
         float xOldRange = xMax - xMin;
         float yOldRange = yMax - yMin;
-        float xNewRange = WorldManager.instance.m_worldSize.x;
-        float yNewRange = WorldManager.instance.m_worldSize.y;
+        float xNewRange = WorldManager.instance.chunkSize.x;
+        float yNewRange = WorldManager.instance.chunkSize.y;
 
         int xPixelPos = (int) ((pos.x - xMin) * xNewRange / xOldRange);
         int yPixelPos = (int) ((pos.y - yMin) * yNewRange / yOldRange);
@@ -105,7 +108,6 @@ public class WorldChunk : MonoBehaviour
     public void DrawPixel(Vector2Int pixelPosition, Color color)
     {
         m_worldTexture.SetPixel(pixelPosition.x, pixelPosition.y, color);
-        m_worldTexture.Apply();
     }
 
     private IEnumerator UpdateLogic()
@@ -114,8 +116,8 @@ public class WorldChunk : MonoBehaviour
         {
             for (int i = 0; i < m_particles.Length; i++)
             {
-                int x = i % WorldManager.instance.m_worldSize.x;
-                int y = i / WorldManager.instance.m_worldSize.x;
+                int x = i % WorldManager.instance.chunkSize.x;
+                int y = i / WorldManager.instance.chunkSize.x;
                 if (m_particles[x, y].GetParticleType() == ParticleType.Empty)
                 {
                     continue;
@@ -126,8 +128,8 @@ public class WorldChunk : MonoBehaviour
             
             for (int i = 0; i < m_particles.Length; i++)
             {
-                int x = i % WorldManager.instance.m_worldSize.x;
-                int y = i / WorldManager.instance.m_worldSize.y;
+                int x = i % WorldManager.instance.chunkSize.x;
+                int y = i / WorldManager.instance.chunkSize.y;
 
                 if (m_particles[x, y].GetParticleType() != ParticleType.Empty)
                 {
@@ -152,7 +154,7 @@ public class WorldChunk : MonoBehaviour
 
     private void Update()
     {
-        KeyCode[] inputKeys = new KeyCode[]
+        KeyCode[] inputKeys =
         {
             KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5,
             KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
@@ -183,5 +185,37 @@ public class WorldChunk : MonoBehaviour
         }
 
         return true;
+    }
+
+    public WorldChunk GetNeighbour(int x, int y)
+    {
+        int chunkPosX = m_chunkPosition.x;
+        int chunkPosY = m_chunkPosition.y;
+        
+        if (x > WorldManager.instance.chunkSize.x) {
+            chunkPosX += 1;
+        }
+        else if (x < WorldManager.instance.chunkSize.x) {
+            chunkPosX += -1;
+        }
+        
+        if (y > WorldManager.instance.chunkSize.y) {
+            chunkPosY += 1;
+        }
+        else if (y < WorldManager.instance.chunkSize.y) {
+            chunkPosY += -1;
+        }
+
+        if (m_chunkPosition.x != chunkPosX && m_chunkPosition.y != chunkPosY)
+        {
+            return WorldManager.instance.GetChunk(chunkPosX, chunkPosY);
+        }
+
+        return null;
+    }
+
+    public Vector2Int GetPosition()
+    {
+        return m_chunkPosition;
     }
 }

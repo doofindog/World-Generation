@@ -11,6 +11,7 @@ public class Particle
 
     public void Init(Vector2Int position)
     {
+        Debug.Log("Chunk Position, "+ position / 32);
         m_position = position;
         m_type = ParticleType.Empty;
     }

@@ -15,8 +15,8 @@ MonoBehaviour:
   particleType: 4
   colour:
     serializedVersion: 2
-    key0: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
-    key1: {r: 1, g: 0.995283, b: 0.995283, a: 1}
+    key0: {r: 0.7735849, g: 0.71155214, b: 0.71155214, a: 1}
+    key1: {r: 0.9716981, g: 0.88461196, b: 0.88461196, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -43,8 +43,14 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   movements:
-  - moveDir: 0
+  - moveDir: 9
     distance: 1
     chance: 1
-  resistance: 1
+  - moveDir: 10
+    distance: 1
+    chance: 1
+  - moveDir: 10
+    distance: 1
+    chance: 1
+  resistance: -1
   dispersalRate: 0
