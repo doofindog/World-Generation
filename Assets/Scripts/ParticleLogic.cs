@@ -1,15 +1,120 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 public class ParticleLogic : MonoBehaviour
 {
-    private WorldChunk m_worldChunk;
+    private ParticleType m_currentType;
 
-    public void Init(WorldChunk chunk)
+    public void Init()
     {
-        m_worldChunk = chunk;
+        m_currentType = ParticleType.Sand;
+        StartCoroutine(UpdateChunks());
+    }
+
+    public void Update()
+    {
+        KeyCode[] inputKeys =
+        {
+            KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5,
+            KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
+        };
+
+        for (int i = 0; i < inputKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(inputKeys[i]))
+            {
+                ParticleData data = ParticleManager.GetParticleAtIndex(i);
+                m_currentType = data.particleType;
+                Debug.Log(m_currentType);
+            }
+        }
+
+        if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(1))
+        {
+            HandleOnMouseDown();
+        }
+    }
+
+    private IEnumerator UpdateChunks()
+    {
+        while (true)
+        {
+            foreach (WorldChunk chunk in WorldManager.instance.chunks)
+            {
+                for (int i = 0; i < chunk.particles.Length; i++)
+                {
+                    int x = i % WorldManager.instance.chunkSize.x;
+                    int y = i / WorldManager.instance.chunkSize.x;
+            
+                    if (chunk.particles[x, y].GetParticleType() == ParticleType.Empty)
+                    {
+                        continue;
+                    }
+                    
+                    UpdateParticle(chunk.particles[x, y]);
+                }
+            }
+            
+            foreach (WorldChunk chunk in WorldManager.instance.chunks)
+            {
+                chunk.UpdateTexture();
+            }
+            yield return new WaitForSeconds(0.0125f);
+        }
+    }
+
+    private void HandleOnMouseDown()
+    {
+        if (Camera.main == null)
+        {
+            return;
+        }
+        
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2Int pixelPos = GetWorldPos(mouseWorldPosition);
+
+        if (!CheckPositionBounds(pixelPos.x, pixelPos.y))
+        {
+            return;
+        }
+        
+        AddParticle(pixelPos, ParticleType.Sand);
+    }
+
+    private void AddParticle(Vector2Int worldPosition, ParticleType type)
+    {
+        int pixelPositionX = worldPosition.x % WorldManager.instance.chunkSize.x;
+        int pixelPositionY = worldPosition.y % WorldManager.instance.chunkSize.y;
+        
+        WorldChunk chunk = WorldManager.instance.GetChunkFromWorldPosition(worldPosition.x, worldPosition.y);
+        chunk.AddParticle(m_currentType, new Vector2Int(pixelPositionX, pixelPositionY));
+    }
+
+    private Vector2Int GetWorldPos(Vector2 pos)
+    {
+        int maxIndexX = (WorldManager.instance.worldSize.x / WorldManager.instance.chunkSize.x) - 1; // minus 1 because the index starts as one
+        int maxIndexY = (WorldManager.instance.worldSize.y / WorldManager.instance.chunkSize.y) - 1;
+        WorldChunk minChunk = WorldManager.instance.GetChunk(0, 0);
+        WorldChunk maxChunk = WorldManager.instance.GetChunk(maxIndexX, maxIndexY);
+
+        Renderer minSprite = minChunk.GetComponent<Renderer>();  // to get the bounds in world space;
+        Renderer maxSprite = maxChunk.GetComponent<Renderer>(); // to get the bounds in world space;
+        float xMin = minSprite.bounds.min.x;
+        float yMin = minSprite.bounds.min.y;
+        float xMax = maxSprite.bounds.max.x;
+        float yMax = maxSprite.bounds.max.y;
+        
+        float xOldRange = xMax - xMin;
+        float yOldRange = yMax - yMin;
+        float xNewRange = WorldManager.instance.worldSize.x;
+        float yNewRange = WorldManager.instance.worldSize.y;
+
+        int xPixelPos = (int) ((pos.x - xMin) * xNewRange / xOldRange);
+        int yPixelPos = (int) ((pos.y - yMin) * yNewRange / yOldRange);
+
+        return new Vector2Int(xPixelPos, yPixelPos);
     }
 
     public void UpdateParticle(Particle particle)
@@ -94,12 +199,6 @@ public class ParticleLogic : MonoBehaviour
 
     private bool TryMove(Particle particle, Vector2Int dir, int distance)
     {
-        if (CheckResistanceInDirection(particle, dir))
-        {
-            SwapParticleInDirection(particle, dir);
-            return true;
-        }
-        
         bool particleMoved = false;
         for (int i = 1; i <= distance; i++)
         {
@@ -126,14 +225,15 @@ public class ParticleLogic : MonoBehaviour
     private bool CheckMoveInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + (dir);
-        //WorldChunk chunk = WorldManager.instance.GetChunk(neighbourPos.x / 32, neighbourPos.y / 32);
-        if (!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y))
+        if (CheckPositionBounds(neighbourPos.x, neighbourPos.y))
         {
-            //Check if In neighbours chunk
             return false;
         }
-
-        if (m_worldChunk.ContainsParticle(neighbourPos.x, neighbourPos.y)) return false;
+        
+        if (ContainsParticle(neighbourPos.x, neighbourPos.y))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -141,7 +241,11 @@ public class ParticleLogic : MonoBehaviour
     private Particle MoveParticleInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + dir;
-        Particle neighbourParticle = m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
+        
+        int chunkPositionX = neighbourPos.x / WorldManager.instance.chunkSize.x;
+        int chunkPositionY = neighbourPos.y / WorldManager.instance.chunkSize.y;
+        WorldChunk chunk = WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
+        Particle neighbourParticle = chunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
         
         neighbourParticle.AddParticle(particle.GetParticleType());
         particle.RemoveParticleData();
@@ -154,39 +258,62 @@ public class ParticleLogic : MonoBehaviour
 
     #region Resistance Check
 
+    private bool ContainsParticle(int x, int y)
+    { 
+        int chunkPositionX = x / WorldManager.instance.chunkSize.x;
+        int chunkPositionY = y / WorldManager.instance.chunkSize.y;
+        WorldChunk chunk = WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
+        
+        int pixelPositionX = x % WorldManager.instance.chunkSize.x;
+        int pixelPositionY = y % WorldManager.instance.chunkSize.y;
+        Debug.Log($"pixel Pos : {pixelPositionX} , {pixelPositionY}" );
+        return chunk.ContainsParticle(pixelPositionX, pixelPositionY);
+    }
+    
+
     private bool CheckResistanceInDirection(Particle particle, Vector2Int dir)
     {
-        Vector2Int neighbourPos = particle.GetPosition() + (dir) ;
-        if (!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y))
-        {
-            return false;
-            
-        }
-
-        if (m_worldChunk.ContainsParticle(neighbourPos.x, neighbourPos.y) &&
-            m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y).GetParticleType() != particle.GetParticleType() &&
-            m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y).GetParticleType() != ParticleType.Empty
-            )
-        {
-            Particle neighbourParticle = m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
-            if (particle.GetParticleData().resistance > neighbourParticle.GetParticleData().resistance)
-            {
-                float chance = Random.Range(0.0f, 1.0f);
-                return chance > 0.3f;
-            }
-        }
+        // Vector2Int neighbourPos = particle.GetPosition() + (dir) ;
+        // if (!m_worldChunk.CheckPositionBounds(neighbourPos.x, neighbourPos.y))
+        // {
+        //     return false;
+        //     
+        // }
+        //
+        // if (m_worldChunk.ContainsParticle(neighbourPos.x, neighbourPos.y) &&
+        //     m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y).GetParticleType() != particle.GetParticleType() &&
+        //     m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y).GetParticleType() != ParticleType.Empty
+        //     )
+        // {
+        //     Particle neighbourParticle = m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
+        //     if (particle.GetParticleData().resistance > neighbourParticle.GetParticleData().resistance)
+        //     {
+        //         float chance = Random.Range(0.0f, 1.0f);
+        //         return chance > 0.3f;
+        //     }
+        // }
 
         return false;
     }
 
     private void SwapParticleInDirection(Particle particle,Vector2Int dir)
     {
-        Vector2Int neighbourPos = particle.GetPosition() + dir;
-        Particle neighbourParticle = m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
-        
-        ParticleType particleType = neighbourParticle.GetParticleType();
-        neighbourParticle.AddParticle(particle.GetParticleType());
-        particle.AddParticle(particleType);
+        // Vector2Int neighbourPos = particle.GetPosition() + dir;
+        // //Particle neighbourParticle = m_worldChunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
+        //
+        // ParticleType particleType = neighbourParticle.GetParticleType();
+        // neighbourParticle.AddParticle(particle.GetParticleType());
+        // particle.AddParticle(particleType);
+    }
+
+    private bool CheckPositionBounds(int x, int y)
+    {
+        if (x < 0 || x >= WorldManager.instance.worldSize.x|| y < 0 || y >= WorldManager.instance.worldSize.y)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     #endregion

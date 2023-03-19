@@ -11,7 +11,6 @@ public class Particle
 
     public void Init(Vector2Int position)
     {
-        Debug.Log("Chunk Position, "+ position / 32);
         m_position = position;
         m_type = ParticleType.Empty;
     }
@@ -60,5 +59,13 @@ public class Particle
     public void SetUpdated(bool value)
     {
         m_updated = value;
+    }
+
+    public WorldChunk GetChunk()
+    {
+        int chunkPositionX = m_position.x / WorldManager.instance.chunkSize.x;
+        int chunkPositionY = m_position.y / WorldManager.instance.chunkSize.y;
+
+        return WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
     }
 }
