@@ -17,26 +17,27 @@ public class WorldChunk : MonoBehaviour
     
     public Sprite sprite;
     
-    public void Init(Vector2Int position,Vector2Int worldSize)
+    public void Init(Vector2Int chunkPosition,Vector2Int chunkSize)
     {
         sprite = GetComponent<SpriteRenderer>().sprite;
 
-        m_chunkPosition = position;
+        m_chunkPosition = chunkPosition;
         m_worldTexture = sprite.texture;
-        particles = new Particle[worldSize.x, worldSize.y];
-
-        for(int y = 0; y < worldSize.y; y++)
+        particles = new Particle[chunkSize.x, chunkSize.y];
+        
+        for(int y = 0; y < chunkSize.y; y++)
         {
-            for (int x = 0; x < worldSize.x; x++)
+            int yIndex = y + m_chunkPosition.y * chunkSize.y;
+            for (int x = 0; x < chunkSize.y; x++)
             {
+                int xIndex = x + m_chunkPosition.x * chunkSize.x;
                 particles[x, y] = new Particle();
-                particles[x,y].Init(new Vector2Int(x * m_chunkPosition.x, y * m_chunkPosition.y));
+                particles[x,y].Init(new Vector2Int(xIndex, yIndex));
                 DrawPixel(new Vector2Int(x,y), Color.gray);
             }
         }
 
         m_chuckColour = new Color[particles.Length];
-        //StartCoroutine(UpdateLogic());
     }
 
     public Particle GetParticleAtIndex(int x, int y)

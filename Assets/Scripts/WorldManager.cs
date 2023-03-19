@@ -53,7 +53,7 @@ public class WorldManager : MonoBehaviour
                 int positionOffsetY = (chunkSize.y  / pixelPerUnit) * y;
                 worldObj.transform.position += new Vector3(positionOffsetX, positionOffsetY);
                 
-                worldChunk.Init(new Vector2Int(x + 1, y + 1), chunkSize);
+                worldChunk.Init(new Vector2Int(x, y), chunkSize);
                 worldChunk.transform.SetParent(world.transform);
                 chunks[x, y] = worldChunk;
             }

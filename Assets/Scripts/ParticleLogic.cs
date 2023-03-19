@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -217,6 +218,7 @@ public class ParticleLogic : MonoBehaviour
         {
             particle.SetUpdated(true);
         }
+        
         return particleMoved;
     }
 
@@ -225,7 +227,7 @@ public class ParticleLogic : MonoBehaviour
     private bool CheckMoveInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + (dir);
-        if (CheckPositionBounds(neighbourPos.x, neighbourPos.y))
+        if (!CheckPositionBounds(neighbourPos.x, neighbourPos.y))
         {
             return false;
         }
@@ -241,11 +243,11 @@ public class ParticleLogic : MonoBehaviour
     private Particle MoveParticleInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + dir;
+        WorldChunk chunk = WorldManager.instance.GetChunkFromWorldPosition(neighbourPos.x, neighbourPos.y);
         
-        int chunkPositionX = neighbourPos.x / WorldManager.instance.chunkSize.x;
-        int chunkPositionY = neighbourPos.y / WorldManager.instance.chunkSize.y;
-        WorldChunk chunk = WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
-        Particle neighbourParticle = chunk.GetParticleAtIndex(neighbourPos.x, neighbourPos.y);
+        int pixelPositionX = neighbourPos.x % WorldManager.instance.chunkSize.x;
+        int pixelPositionY = neighbourPos.y % WorldManager.instance.chunkSize.y;
+        Particle neighbourParticle = chunk.GetParticleAtIndex(pixelPositionX, pixelPositionY);
         
         neighbourParticle.AddParticle(particle.GetParticleType());
         particle.RemoveParticleData();
@@ -259,15 +261,23 @@ public class ParticleLogic : MonoBehaviour
     #region Resistance Check
 
     private bool ContainsParticle(int x, int y)
-    { 
-        int chunkPositionX = x / WorldManager.instance.chunkSize.x;
-        int chunkPositionY = y / WorldManager.instance.chunkSize.y;
-        WorldChunk chunk = WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
-        
-        int pixelPositionX = x % WorldManager.instance.chunkSize.x;
-        int pixelPositionY = y % WorldManager.instance.chunkSize.y;
-        Debug.Log($"pixel Pos : {pixelPositionX} , {pixelPositionY}" );
-        return chunk.ContainsParticle(pixelPositionX, pixelPositionY);
+    {
+        try
+        {
+            int chunkPositionX = x / WorldManager.instance.chunkSize.x;
+            int chunkPositionY = y / WorldManager.instance.chunkSize.y;
+            WorldChunk chunk = WorldManager.instance.GetChunk(chunkPositionX, chunkPositionY);
+
+            int pixelPositionX = x % WorldManager.instance.chunkSize.x;
+            int pixelPositionY = y % WorldManager.instance.chunkSize.y;
+            return chunk.ContainsParticle(pixelPositionX, pixelPositionY);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+
+        return false;
     }
     
 
@@ -308,7 +318,7 @@ public class ParticleLogic : MonoBehaviour
 
     private bool CheckPositionBounds(int x, int y)
     {
-        if (x < 0 || x >= WorldManager.instance.worldSize.x|| y < 0 || y >= WorldManager.instance.worldSize.y)
+        if (x < 0 || x >= WorldManager.instance.worldSize.x || y < 0 || y >= WorldManager.instance.worldSize.y)
         {
             return false;
         }
