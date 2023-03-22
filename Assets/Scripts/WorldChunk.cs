@@ -1,21 +1,19 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class WorldChunk : MonoBehaviour
 {
+    //Private Variables
     private Vector2Int m_chunkPosition;
     private Color m_defaultColor;
     private Texture2D m_worldTexture;
-    public Particle[,] particles;
-    private Color[] m_chuckColour;
-    private ParticleLogic m_logic;
+    private Particle[,] m_particles;
+    private Color[] m_chuckColour;         
     private WorldChunk[] m_neighbourChunks;
-    private ParticleType m_currentType;
-    
+
+    //Public Variables
     public Sprite sprite;
+    public bool chunkActive;
+    public bool isActiveNextStep;
     
     public void Init(Vector2Int chunkPosition,Vector2Int chunkSize)
     {
@@ -23,7 +21,7 @@ public class WorldChunk : MonoBehaviour
 
         m_chunkPosition = chunkPosition;
         m_worldTexture = sprite.texture;
-        particles = new Particle[chunkSize.x, chunkSize.y];
+        m_particles = new Particle[chunkSize.x, chunkSize.y];
         
         for(int y = 0; y < chunkSize.y; y++)
         {
@@ -31,18 +29,18 @@ public class WorldChunk : MonoBehaviour
             for (int x = 0; x < chunkSize.y; x++)
             {
                 int xIndex = x + m_chunkPosition.x * chunkSize.x;
-                particles[x, y] = new Particle();
-                particles[x,y].Init(new Vector2Int(xIndex, yIndex));
+                m_particles[x, y] = new Particle();
+                m_particles[x,y].Init(new Vector2Int(xIndex, yIndex));
                 DrawPixel(new Vector2Int(x,y), Color.gray);
-            }
+            } 
         }
 
-        m_chuckColour = new Color[particles.Length];
+        m_chuckColour = new Color[m_particles.Length];
     }
 
     public Particle GetParticleAtIndex(int x, int y)
     {
-        return particles[x, y];
+        return m_particles[x, y];
     }
 
     public bool ContainsParticle(int x, int y)
@@ -58,9 +56,9 @@ public class WorldChunk : MonoBehaviour
             return null;
         }
         
-        particles[particlePos.x, particlePos.y].AddParticle(type);
-        
-        return particles[particlePos.x, particlePos.y];
+        m_particles[particlePos.x, particlePos.y].AddParticle(type);
+        chunkActive = true;
+        return m_particles[particlePos.x, particlePos.y];
     }
 
     public void DrawPixel(Vector2Int pixelPosition, Color color)
@@ -69,83 +67,33 @@ public class WorldChunk : MonoBehaviour
         m_worldTexture.Apply();
     }
 
-    public void UpdateParticle(ParticleLogic logic)
-    {
-        if (m_logic == null)
-        {
-            m_logic = logic;
-        }
-
-
-        // ReSharper disable once IteratorNeverReturns
-    }
-
     public void UpdateTexture()
     {
-        for (int i = 0; i < particles.Length; i++)
+        for (int i = 0; i < m_particles.Length; i++)
         {
             int x = i % WorldManager.instance.chunkSize.x;
             int y = i / WorldManager.instance.chunkSize.y;
 
-            if (particles[x, y].GetParticleType() != ParticleType.Empty)
+            if (m_particles[x, y].GetParticleType() != ParticleType.Empty)
             {
-                m_chuckColour[i] = particles[x, y].GetParticleData().colour.Evaluate(Random.Range(0f, 1.0f));
+                m_chuckColour[i] = m_particles[x, y].GetParticleData().colour;
             }
             else
             {
                 m_chuckColour[i]= Color.gray;
             }
 
-            if (particles[x, y].HasUpdated())
+            if (m_particles[x, y].HasUpdated())
             {
-                particles[x,y].SetUpdated(false);
+                m_particles[x,y].SetUpdated(false);
             }
         }
         m_worldTexture.SetPixels(m_chuckColour);
         m_worldTexture.Apply();
     }
 
-
-    public bool CheckPositionBounds(int x, int y)
+    public Particle[,] GetParticles()
     {
-        if (x < 0 || x >= particles.GetLength(0) ||
-            y < 0 || y >= particles.GetLength(1))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public WorldChunk GetNeighbour(int x, int y)
-    {
-        int chunkPosX = m_chunkPosition.x;
-        int chunkPosY = m_chunkPosition.y;
-        
-        if (x > WorldManager.instance.chunkSize.x) {
-            chunkPosX += 1;
-        }
-        else if (x < WorldManager.instance.chunkSize.x) {
-            chunkPosX += -1;
-        }
-        
-        if (y > WorldManager.instance.chunkSize.y) {
-            chunkPosY += 1;
-        }
-        else if (y < WorldManager.instance.chunkSize.y) {
-            chunkPosY += -1;
-        }
-
-        if (m_chunkPosition.x != chunkPosX && m_chunkPosition.y != chunkPosY)
-        {
-            return WorldManager.instance.GetChunk(chunkPosX, chunkPosY);
-        }
-
-        return null;
-    }
-
-    public Vector2Int GetPosition()
-    {
-        return m_chunkPosition;
+        return m_particles;
     }
 }

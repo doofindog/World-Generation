@@ -6,8 +6,9 @@ using UnityEngine.Serialization;
 [System.Serializable]
 public class ParticleData : ScriptableObject
 {
+    [Tooltip("Type of Particle")]
     public ParticleType particleType;
-    public Gradient colour;
+    public Color colour;
     
     [Header("Movement")]
     [FormerlySerializedAs("moveChecks")] [SerializeField] public ParticleMovement[] movements;

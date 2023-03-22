@@ -1,16 +1,22 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Manager class used to generate worlds
+/// </summary>
 public class WorldManager : MonoBehaviour
 {
-    public int pixelPerUnit;
-    public Vector2Int worldSize;
-    public Vector2Int chunkSize;
-    
     public static WorldManager instance;
     
-    public WorldChunk[,] chunks;
+    [Tooltip("Pixel size of a particle")]
+    public int pixelPerUnit;
+    [Tooltip("Size of the World. should be divisible by pixel per unit")]
+    public Vector2Int worldSize;
+    [Tooltip("A small section of the  world. should be divisible by pixel per unit")]
+    public Vector2Int chunkSize;
+    
+    
+    private WorldChunk[,] m_chunks;
 
     private void Awake()
     {
@@ -27,12 +33,12 @@ public class WorldManager : MonoBehaviour
         int xChunks = worldSize.x / chunkSize.x;
         int yChunks = worldSize.y / chunkSize.y;
         
-        chunks = new WorldChunk[xChunks, yChunks];
+        m_chunks = new WorldChunk[xChunks, yChunks];
         GameObject world = new GameObject("World");
 
-        for (int y = 0; y < chunks.GetLength(1); y++)
+        for (int y = 0; y < m_chunks.GetLength(1); y++)
         {
-            for (int x = 0; x < chunks.GetLength(0); x++)
+            for (int x = 0; x < m_chunks.GetLength(0); x++)
             {
                 GameObject worldObj = new GameObject($"WorldChunk({x},{y})");
                 Texture2D worldTexture = new Texture2D(chunkSize.x,chunkSize.y)
@@ -55,29 +61,53 @@ public class WorldManager : MonoBehaviour
                 
                 worldChunk.Init(new Vector2Int(x, y), chunkSize);
                 worldChunk.transform.SetParent(world.transform);
-                chunks[x, y] = worldChunk;
+                m_chunks[x, y] = worldChunk;
             }
         }
 
         ParticleLogic logic = world.AddComponent<ParticleLogic>();
-        logic.Init();
+        logic.Init(this);
     }
 
     public WorldChunk GetChunk(int x, int y)
     {
-        if((x >= 0 && x < chunks.GetLength(0)) && (y >= 0 && y < chunks.GetLength(1)))
+        if((x >= 0 && x < m_chunks.GetLength(0)) && (y >= 0 && y < m_chunks.GetLength(1)))
         {
-            return chunks[x, y];
+            return m_chunks[x, y];
         }
 
         return null;
     }
 
-    public WorldChunk GetChunkFromWorldPosition(int x, int y)
+    public WorldChunk[,] GetAllChunks()
+    {
+        return m_chunks;
+    }
+
+    public WorldChunk GetChunkFromParticlePosition(int x, int y)
     {
         int chunkPositionX = x / WorldManager.instance.chunkSize.x;
         int chunkPositionY = y / WorldManager.instance.chunkSize.y;
 
         return GetChunk(chunkPositionX, chunkPositionY);
+    }
+
+    public Particle GetParticle(int x, int y)
+    {
+        WorldChunk chunk = WorldManager.instance.GetChunkFromParticlePosition(x, y);
+        
+        int pixelPositionX = x % WorldManager.instance.chunkSize.x;
+        int pixelPositionY = y % WorldManager.instance.chunkSize.y;
+        return chunk.GetParticleAtIndex(pixelPositionX, pixelPositionY);
+    }
+
+    public bool ContainsParticle(int x, int y)
+    {
+        WorldChunk chunk = WorldManager.instance.GetChunkFromParticlePosition(x, y);
+        
+        int pixelPositionX = x % WorldManager.instance.chunkSize.x;
+        int pixelPositionY = y % WorldManager.instance.chunkSize.y;
+            
+        return chunk.ContainsParticle(pixelPositionX, pixelPositionY);
     }
 }
