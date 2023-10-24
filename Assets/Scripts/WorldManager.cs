@@ -30,17 +30,41 @@ public class WorldManager : MonoBehaviour
 
     private void GenerateEmptyWorld()
     {
-        int xChunks = worldSize.x / chunkSize.x;
-        int yChunks = worldSize.y / chunkSize.y;
+        int screenHeight, screenWidth = 0;
+        
+        if (Camera.main == null)
+        {
+            Debug.LogError("No Main Camera Found, Please set main Camera");
+            return;
+        }
+
+        float orthographicSize = Camera.main.orthographicSize;
+        screenHeight = Mathf.RoundToInt(orthographicSize * 2);
+        screenWidth =  Mathf.RoundToInt((orthographicSize * 2) * Screen.width / Screen.height);
+        
+        Debug.Log($"{screenHeight},{screenWidth}");
+        Vector3 startPosition = -(new Vector3(screenWidth, screenHeight, 0) * 0.5f) + (new Vector3(1,1,0) * 0.5f);
+
+        int xChunks = screenWidth / 2 + 1; //we add one to 
+        int yChunks = screenHeight / 2 + 1;
         
         m_chunks = new WorldChunk[xChunks, yChunks];
-        GameObject world = new GameObject("World");
-
+        GameObject world = new GameObject("World")
+        {
+            transform = { position = Vector3.zero }
+        };
+        
         for (int y = 0; y < m_chunks.GetLength(1); y++)
         {
             for (int x = 0; x < m_chunks.GetLength(0); x++)
             {
-                GameObject worldObj = new GameObject($"WorldChunk({x},{y})");
+                GameObject worldObj = new GameObject($"WorldChunk({x},{y})")
+                {
+                    transform =
+                    {
+                        position = startPosition
+                    }
+                };
                 Texture2D worldTexture = new Texture2D(chunkSize.x,chunkSize.y)
                 {
                     filterMode = FilterMode.Point

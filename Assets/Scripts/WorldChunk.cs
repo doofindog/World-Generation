@@ -31,7 +31,7 @@ public class WorldChunk : MonoBehaviour
                 int xIndex = x + m_chunkPosition.x * chunkSize.x;
                 m_particles[x, y] = new Particle();
                 m_particles[x,y].Init(new Vector2Int(xIndex, yIndex));
-                DrawPixel(new Vector2Int(x,y), Color.gray);
+                DrawPixel(new Vector2Int(x,y), Color.white);
             } 
         }
 
@@ -46,7 +46,7 @@ public class WorldChunk : MonoBehaviour
     public bool ContainsParticle(int x, int y)
     {
         Particle particle = GetParticleAtIndex(x, y);
-        return particle != null && particle.GetParticleType() != ParticleType.Empty;
+        return particle != null && particle.GetParticleType() != ParticleType.Air;
     }
 
     public Particle AddParticle(ParticleType type, Vector2Int particlePos)
@@ -74,13 +74,13 @@ public class WorldChunk : MonoBehaviour
             int x = i % WorldManager.instance.chunkSize.x;
             int y = i / WorldManager.instance.chunkSize.y;
 
-            if (m_particles[x, y].GetParticleType() != ParticleType.Empty)
+            if (m_particles[x, y].GetParticleType() != ParticleType.Air)
             {
                 m_chuckColour[i] = m_particles[x, y].GetParticleData().colour;
             }
             else
             {
-                m_chuckColour[i]= Color.gray;
+                m_chuckColour[i]= Color.white;
             }
 
             if (m_particles[x, y].HasUpdated())

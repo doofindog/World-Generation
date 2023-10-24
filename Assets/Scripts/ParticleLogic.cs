@@ -55,7 +55,7 @@ public class ParticleLogic : MonoBehaviour
                     int x = i % _worldManager.chunkSize.x;
                     int y = i / _worldManager.chunkSize.x;
 
-                    if (chunk.GetParticles()[x, y].GetParticleType() == ParticleType.Empty)
+                    if (chunk.GetParticles()[x, y].GetParticleType() == ParticleType.Air)
                     {
                         continue;
                     }
@@ -125,7 +125,7 @@ public class ParticleLogic : MonoBehaviour
 
     private void UpdateParticle(Particle particle)
     {
-        if (particle.GetParticleType() == ParticleType.Empty || particle.HasUpdated())
+        if (particle.GetParticleType() == ParticleType.Air || particle.HasUpdated())
         {
             return;
         }
@@ -267,8 +267,7 @@ public class ParticleLogic : MonoBehaviour
     }
 
     #endregion
-
-
+    
     #region Resistance Check
 
     private bool ContainsParticle(int x, int y)
@@ -284,8 +283,7 @@ public class ParticleLogic : MonoBehaviour
 
         return false;
     }
-
-
+    
     private bool CheckResistanceInDirection(Particle particle, Vector2Int dir)
     {
         Vector2Int neighbourPos = particle.GetPosition() + dir;
@@ -301,7 +299,7 @@ public class ParticleLogic : MonoBehaviour
         if (ContainsParticle(neighbourPos.x, neighbourPos.y) &&
             _worldManager.GetParticle(neighbourPos.x, neighbourPos.y).GetParticleType() !=
             particle.GetParticleType() &&
-            _worldManager.GetParticle(neighbourPos.x, neighbourPos.y).GetParticleType() != ParticleType.Empty
+            _worldManager.GetParticle(neighbourPos.x, neighbourPos.y).GetParticleType() != ParticleType.Air
            )
         {
             Particle neighbourParticle = _worldManager.GetParticle(neighbourPos.x, neighbourPos.y);

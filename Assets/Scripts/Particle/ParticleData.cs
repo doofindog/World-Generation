@@ -20,7 +20,7 @@ public class ParticleData : ScriptableObject
 
 public enum ParticleType
 {
-    Empty,
+    Air,
     Water,
     Sand,
     Wood,

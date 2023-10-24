@@ -12,7 +12,7 @@ public class Particle
     public void Init(Vector2Int position)
     {
         m_position = position;
-        m_type = ParticleType.Empty;
+        m_type = ParticleType.Air;
     }
 
     public void AddParticle(ParticleType type)
@@ -22,7 +22,7 @@ public class Particle
 
     public void RemoveParticleData()
     {
-        m_type = ParticleType.Empty;
+        m_type = ParticleType.Air;
     }
 
     public ParticleMovement[] GetMovements()
@@ -43,7 +43,7 @@ public class Particle
 
     public ParticleData GetParticleData()
     {
-        if (m_type == ParticleType.Empty)
+        if (m_type == ParticleType.Air)
         {
             return null;
         }
