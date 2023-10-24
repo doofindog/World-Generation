@@ -77,11 +77,29 @@ public class ParticleLogic : MonoBehaviour
     private void HandleOnMouseDown(bool doubleSize)
     {
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2Int pixelPos = GetWorldPos(mouseWorldPosition);
-
-        if (CheckPositionBounds(pixelPos.x, pixelPos.y))
+        if(!doubleSize)
         {
-            AddParticle(pixelPos, ParticleType.Sand);
+            Vector2Int pixelPos = GetWorldPos(mouseWorldPosition);
+            if (CheckPositionBounds(pixelPos.x, pixelPos.y))
+            {
+                AddParticle(pixelPos, ParticleType.Sand);
+            }
+        }
+        else
+        {
+            int xSize = 4;
+            int ySize = 4;
+            for (int x = -xSize / 2; x <= xSize; x++)
+            {
+                for (int y = -ySize / 2; y <= ySize; y++)
+                {
+                    Vector2Int pixelPos = GetWorldPos(mouseWorldPosition) + new Vector2Int(x,y);
+                    if (CheckPositionBounds(pixelPos.x, pixelPos.y))
+                    {
+                        AddParticle(pixelPos, ParticleType.Sand);
+                    }
+                }
+            }
         }
     }
 
