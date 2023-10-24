@@ -29,7 +29,6 @@ public class ParticleLogic : MonoBehaviour
             {
                 ParticleData data = ParticleManager.GetParticleAtIndex(i);
                 _selectedType = data.particleType;
-                Debug.Log(_selectedType);
             }
         }
 
@@ -71,7 +70,7 @@ public class ParticleLogic : MonoBehaviour
                 chunk.isActiveNextStep = false;
             }
 
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.01f);
         }
     }
 

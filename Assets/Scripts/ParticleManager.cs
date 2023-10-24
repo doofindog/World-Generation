@@ -11,7 +11,7 @@ public class ParticleManager : MonoBehaviour
 
     private static ParticleManager instance;
 
-    public void Start()
+    public void Awake()
     {
         Init();
     }

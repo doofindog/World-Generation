@@ -9,10 +9,10 @@ public class Particle
     private ParticleType m_type;
     private bool m_updated;
 
-    public void Init(Vector2Int position)
+    public void Init(Vector2Int position,ParticleType type = ParticleType.Air)
     {
         m_position = position;
-        m_type = ParticleType.Air;
+        m_type = type;
     }
 
     public void AddParticle(ParticleType type)

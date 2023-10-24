@@ -30,28 +30,26 @@ public class WorldManager : MonoBehaviour
 
     private void GenerateEmptyWorld()
     {
-        int screenHeight, screenWidth = 0;
-        
         if (Camera.main == null)
         {
             Debug.LogError("No Main Camera Found, Please set main Camera");
             return;
         }
 
-        float orthographicSize = Camera.main.orthographicSize;
-        screenHeight = Mathf.RoundToInt(orthographicSize * 2);
-        screenWidth =  Mathf.RoundToInt((orthographicSize * 2) * Screen.width / Screen.height);
-        
-        Debug.Log($"{screenHeight},{screenWidth}");
-        Vector3 startPosition = -(new Vector3(screenWidth, screenHeight, 0) * 0.5f) + (new Vector3(1,1,0) * 0.5f);
+        int xChunks = worldSize.x / chunkSize.x;
+        int yChunks = worldSize.y / chunkSize.y;
 
-        int xChunks = screenWidth / 2 + 1; //we add one to 
-        int yChunks = screenHeight / 2 + 1;
+        Debug.Log($"{xChunks}, {yChunks}");
         
         m_chunks = new WorldChunk[xChunks, yChunks];
-        GameObject world = new GameObject("World")
+
+        GameObject world = new GameObject("World");
+
+        float chunkSprintSize = chunkSize.x / pixelPerUnit; 
+        Vector3 startPosition = new Vector3()
         {
-            transform = { position = Vector3.zero }
+           x = Camera.main.transform.position.x - (xChunks * 0.5f) - (chunkSprintSize * 0.5f),
+           y = Camera.main.transform.position.y - (yChunks * 0.5f) - (chunkSprintSize) 
         };
         
         for (int y = 0; y < m_chunks.GetLength(1); y++)
@@ -62,7 +60,7 @@ public class WorldManager : MonoBehaviour
                 {
                     transform =
                     {
-                        position = startPosition
+                        position = startPosition 
                     }
                 };
                 Texture2D worldTexture = new Texture2D(chunkSize.x,chunkSize.y)

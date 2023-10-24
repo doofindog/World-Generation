@@ -17,11 +17,23 @@ public class WorldChunk : MonoBehaviour
     
     public void Init(Vector2Int chunkPosition,Vector2Int chunkSize)
     {
-        sprite = GetComponent<SpriteRenderer>().sprite;
-
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        sprite = spriteRenderer.sprite;
         m_chunkPosition = chunkPosition;
         m_worldTexture = sprite.texture;
         m_particles = new Particle[chunkSize.x, chunkSize.y];
+
+        Camera mainCamera = Camera.main;
+        Bounds bounds = spriteRenderer.bounds;
+        
+        float screenAspect = (float)Screen.width / (float)Screen.height;
+        float cameraHeight = mainCamera.orthographicSize * 2;
+        Bounds cameraBounds =  new Bounds(
+            mainCamera.transform.position,
+            new Vector3(cameraHeight * screenAspect, cameraHeight, 0));
+            
+        int textureWidth = m_worldTexture.width;
+        int textureHeight = m_worldTexture.height;
         
         for(int y = 0; y < chunkSize.y; y++)
         {
@@ -32,6 +44,17 @@ public class WorldChunk : MonoBehaviour
                 m_particles[x, y] = new Particle();
                 m_particles[x,y].Init(new Vector2Int(xIndex, yIndex));
                 DrawPixel(new Vector2Int(x,y), Color.white);
+                
+                float xRatio = x / (float)m_worldTexture.width;
+                float yRatio = y / (float)m_worldTexture.height;
+
+                Vector3 worldPos = new Vector3(bounds.min.x + (bounds.size.y * xRatio),bounds.min.y + (bounds.size.y * yRatio),0);
+                if(worldPos.x < cameraBounds.min.x || worldPos.x > cameraBounds.max.x ||
+                   worldPos.y < cameraBounds.min.y || worldPos.y > cameraBounds.max.y)
+                {
+                    m_particles[x,y].AddParticle(ParticleType.Wood);
+                    DrawPixel(new Vector2Int(x, y), Color.red);
+                }
             } 
         }
 
