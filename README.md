@@ -1,14 +1,16 @@
-# Introduction
+https://www.youtube.com/watch?v=gmw_QumfBJM
+
+|# Introduction
 A cellular Automata environment where you can play around with different particles / elements. This project revolves a 2d grid of cells, with each cell having a specificized state and rules on how it will change over time, around rules similar to Conway's Game of life. Create your own little environment with wood, water, sand and gas. The main focus is on the challenges and solutions encountered while developing the simulation, particularly regarding rendering and particle movement.
 
-#Key Steps In Implementation
+# Key Steps In Implementation
 1. Dynamic Textures : Developing a system to generate textures on the fly as particles were adding or interacted within the game world.
 2. Chunk Management : Textures were split into chunks to optimize rendering. Each chunk handled its own rendering independently, which was intended to improve performance by only rendering visible chunks.
 3. Texture Handling : The issue arose because Unity was not garbage collecting the old textures when new ones were created every frame. Instead of creating a new texture every frame, I reused existing textures or properly managed the memory to ensure old textures were deleted before creating new ones.
 4. Movement and Behavior :  Adding different behaviors to each particle type. Implementing efficient algorithms and rules for particle movement, minimizing unnecessary calculations. Movements consisted of moving left right up down, diagonally, Some extra behaviors involved dying and eating other cells.
 5. Selective Updates :  To improve further performance, updates are only done to particles or chunks that are predicted by behaviour based on their state and surroundings.
 
-#How To Use
+# How To Use
 1. Use the number keys 1, 2, 3, 4 to choose your element.
 2. Right click on the screen to add element, left click on the screen to add element. Right click to remove Element
 
